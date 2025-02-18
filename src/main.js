@@ -3,8 +3,14 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import figlet from 'figlet';
 import { createSpinner } from 'nanospinner';
+import { Keypair } from '@solana/web3.js';
+import bs58 from 'bs58';
+import * as bip39 from "bip39";
+import { derivePath } from "ed25519-hd-key";
 
-const spinner = createSpinner();
+const DERIVATION_PATH = "m/44'/501'/0'/0'";
+
+// const spinner = createSpinner();
 
 function welcome(){
     figlet('Orbit', function(err, data) {
@@ -40,4 +46,18 @@ async function handle(input){
     } else {
         process.exit()
     }
+}
+
+async function createWallet(){
+    const mnemonic = bip39.generateMnemonic();
+
+    const seed = await bip39.mnemonicToSeed(mnemonic);
+    const derivedSeed = derivePath(DERIVATION_PATH, seed.toString("hex")).key;
+
+    const keypair = Keypair.fromSeed(derivedSeed);
+
+    console.log(chalk.magentaBright("\nAddress:", keypair.publicKey.toBase58(), "\n"));
+    console.log(chalk.redBright("Private Key:", keypair.secretKey, "\n"));
+    console.log(chalk.redBright("Private Key (Base58):", bs58.encode(keypair.secretKey), "\n"));
+    console.log(chalk.redBright("Mnemonic phrase:", mnemonic));
 }
