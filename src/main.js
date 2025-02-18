@@ -42,6 +42,7 @@ async function ask(){
 
 async function handle(input){
     if (input === 'Create Solana wallet'){
+        console.clear()
         createWallet()
     } else {
         process.exit()
@@ -59,5 +60,30 @@ async function createWallet(){
     console.log(chalk.magentaBright("\nAddress:", keypair.publicKey.toBase58(), "\n"));
     console.log(chalk.redBright("Private Key:", keypair.secretKey, "\n"));
     console.log(chalk.redBright("Private Key (Base58):", bs58.encode(keypair.secretKey), "\n"));
-    console.log(chalk.redBright("Mnemonic phrase:", mnemonic));
+    console.log(chalk.redBright("Mnemonic phrase:", mnemonic, "\n"));
+    
+    ask2();
+}
+
+async function ask2(){
+    const answers = await inquirer.prompt({
+        name: 'input',
+        type: 'list',
+        message: 'What do you want to do? \n',
+        choices: [
+            'Go back',
+            'Exit'
+        ],
+    });
+
+    return handle2(answers.input);
+}
+
+async function handle2(input){
+    if (input === 'Go back'){
+        console.clear()
+        ask()
+    } else {
+        process.exit()
+    }
 }
