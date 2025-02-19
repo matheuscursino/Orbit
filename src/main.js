@@ -46,9 +46,23 @@ async function initialPrompt(){
 }
 
 async function createWallet(){
+    var seed;
+
     const mnemonic = bip39.generateMnemonic();
 
-    const seed = await bip39.mnemonicToSeed(mnemonic);
+    const passphrase = await inquirer.prompt({
+        name: 'input',
+        type: 'password',
+        message: 'Type a passphrase (leave empty for none):',
+        mask: '*'
+    })
+
+    if(passphrase.input == ""){
+        seed = await bip39.mnemonicToSeed(mnemonic);
+    } else {
+        seed = await bip39.mnemonicToSeed(mnemonic, passphrase.input);
+    }
+
     const derivedSeed = derivePath(DERIVATION_PATH, seed.toString("hex")).key;
 
     const keypair = Keypair.fromSeed(derivedSeed);
