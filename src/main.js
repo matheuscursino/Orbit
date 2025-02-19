@@ -96,6 +96,8 @@ async function goBackPrompt(){
 }
 
 async function restoreWalletPrompt(){
+    var seed;
+
     const answers = await inquirer.prompt({
         name: 'input',
         type: 'input',
@@ -104,7 +106,19 @@ async function restoreWalletPrompt(){
 
     const mnemonic = answers.input
 
-    const seed = await bip39.mnemonicToSeed(mnemonic);
+    const passphrase = await inquirer.prompt({
+        name: 'input',
+        type: 'password',
+        message: 'Type your passphrase (leave empty for none):',
+        mask: '*'
+    })
+
+    if(passphrase.input == ""){
+        seed = await bip39.mnemonicToSeed(mnemonic);
+    } else {
+        seed = await bip39.mnemonicToSeed(mnemonic, passphrase.input);
+    }
+
     const derivedSeed = derivePath(DERIVATION_PATH, seed.toString("hex")).key;
 
     const keypair = Keypair.fromSeed(derivedSeed);
