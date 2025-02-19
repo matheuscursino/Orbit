@@ -12,9 +12,9 @@ const DERIVATION_PATH = "m/44'/501'/0'/0'";
 
 // const spinner = createSpinner();
 
-ask();
+initialPrompt();
 
-async function ask(){
+async function initialPrompt(){
     await figlet('Orbit', function(err, data) {
         if (err) {
             console.log(err)
@@ -34,16 +34,12 @@ async function ask(){
         ],
     });
 
-    return handle(answers.input);
-}
-
-async function handle(input){
-    if (input === 'Create Solana wallet'){
+   if (answers.input === 'Create Solana wallet'){
         console.clear()
         createWallet()
-    } else if (input === 'Restore wallet from mnemonic'){
+    } else if (answers.input === 'Restore wallet from mnemonic'){
         console.clear()
-        restoreWalletAsk()
+        restoreWalletPrompt()
     } else {
         process.exit()
     }
@@ -62,10 +58,10 @@ async function createWallet(){
     console.log(chalk.redBright("Private Key (Base58):", bs58.encode(keypair.secretKey), "\n"));
     console.log(chalk.redBright("Mnemonic phrase:", mnemonic, "\n"));
     
-    ask2();
+    goBackPrompt();
 }
 
-async function ask2(){
+async function goBackPrompt(){
     const answers = await inquirer.prompt({
         name: 'input',
         type: 'list',
@@ -76,30 +72,23 @@ async function ask2(){
         ],
     });
 
-    return handle2(answers.input);
-}
-
-async function handle2(input){
-    if (input === 'Go back'){
+   if (answers.input === 'Go back'){
         console.clear()
-        ask()
+        initialPrompt()
     } else {
         process.exit()
     }
+   
 }
 
-async function restoreWalletAsk(){
+async function restoreWalletPrompt(){
     const answers = await inquirer.prompt({
         name: 'input',
         type: 'input',
         message: 'Type your mnemonic phrase \n'
     });
 
-    return handle3(answers.input);
-}
-
-async function handle3(input){
-    const mnemonic = input
+    const mnemonic = answers.input
 
     const seed = await bip39.mnemonicToSeed(mnemonic);
     const derivedSeed = derivePath(DERIVATION_PATH, seed.toString("hex")).key;
@@ -111,5 +100,5 @@ async function handle3(input){
     console.log(chalk.redBright("Private Key (Base58):", bs58.encode(keypair.secretKey), "\n"));
     console.log(chalk.redBright("Mnemonic phrase:", mnemonic, "\n"));
 
-    ask2();
+    goBackPrompt();
 }
