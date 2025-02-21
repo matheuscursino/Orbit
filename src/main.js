@@ -157,7 +157,7 @@ async function checkBalance(){
 
     const addressInput = answers.input;
 
-    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+    const connection = new Connection(clusterApiUrl("mainnet-beta"), "confirmed");
     const wallet = new PublicKey(addressInput);
     
     const balance = await connection.getBalance(wallet);
@@ -194,7 +194,7 @@ async function sendSol(){
         const fromKeypair = Keypair.fromSecretKey(bs58.decode(answers.input.trim()));
       
         const connection = new Connection(
-          "https://api.devnet.solana.com",
+          "https://api.mainnet-beta.solana.com",
           "confirmed",
         );
       
