@@ -3,7 +3,13 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import figlet from 'figlet';
 import { createSpinner } from 'nanospinner';
-import { Keypair } from '@solana/web3.js';
+import {
+    Keypair,
+    clusterApiUrl,
+    Connection,
+    PublicKey,
+    LAMPORTS_PER_SOL
+} from "@solana/web3.js";
 import bs58 from 'bs58';
 import * as bip39 from "bip39";
 import { derivePath } from "ed25519-hd-key";
@@ -29,6 +35,7 @@ async function initialPrompt(){
         message: 'What do you want to do? \n',
         choices: [
             'Create Solana wallet',
+            'Check account balance',
             'Restore wallet from mnemonic',
             'Exit'
         ],
@@ -40,6 +47,9 @@ async function initialPrompt(){
     } else if (answers.input === 'Restore wallet from mnemonic'){
         console.clear()
         restoreWalletPrompt()
+    } else if (answers.input === 'Check account balance'){
+        console.clear()
+        checkBalance()
     } else {
         process.exit()
     }
@@ -127,6 +137,24 @@ async function restoreWalletPrompt(){
     console.log(chalk.redBright("Private Key:", keypair.secretKey, "\n"));
     console.log(chalk.redBright("Private Key (Base58):", bs58.encode(keypair.secretKey), "\n"));
     console.log(chalk.redBright("Mnemonic phrase:", mnemonic, "\n"));
+
+    goBackPrompt();
+}
+
+async function checkBalance(){
+    const answers = await inquirer.prompt({
+        name: 'input',
+        type: 'input',
+        message: 'Type the adress to check \n'
+    });
+
+    const addressInput = answers.input
+
+    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+    const wallet = new PublicKey(addressInput);
+    
+    const balance = await connection.getBalance(wallet);
+    console.log(chalk.redBright(`\n Balance: ${balance / LAMPORTS_PER_SOL} SOL \n`));
 
     goBackPrompt();
 }
