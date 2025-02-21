@@ -26,11 +26,6 @@ Ensure you have the following installed:
 - [Node.js](https://nodejs.org/)
 - npm (comes with Node.js)
 
-### Install Dependencies
-
-```sh
-npm install
-```
 
 ## How to Run
 
